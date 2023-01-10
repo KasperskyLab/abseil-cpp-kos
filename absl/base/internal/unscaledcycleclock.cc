@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2022 AO Kaspersky Lab. All Rights Reserved
+//
 
 #include "absl/base/internal/unscaledcycleclock.h"
 
@@ -33,6 +36,11 @@
 #include "absl/base/call_once.h"
 #endif
 #endif
+
+#ifdef __KOS__ // 03.11.2022 adapted for KasperskyOS
+#include <hal/cputicks.h>
+#endif
+
 
 #include "absl/base/internal/sysinfo.h"
 
@@ -112,7 +120,17 @@ double UnscaledCycleClock::Frequency() {
 // the virtual timer properly.
 int64_t UnscaledCycleClock::Now() {
   int64_t virtual_timer_value;
+
+#ifdef __KOS__ // 03.11.2022 adapted for KasperskyOS
+   
+  virtual_timer_value = HalGetCpuTicks();
+
+#else
+
   asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
+
+#endif
+
   return virtual_timer_value;
 }
 

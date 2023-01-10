@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+// © 2022 AO Kaspersky Lab. All Rights Reserved
+//
 // -----------------------------------------------------------------------------
 // File: config.h
 // -----------------------------------------------------------------------------
@@ -416,7 +418,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
     defined(__asmjs__) || defined(__wasm__) || defined(__Fuchsia__) ||    \
     defined(__sun) || defined(__ASYLO__) || defined(__myriad2__) ||       \
     defined(__HAIKU__) || defined(__OpenBSD__) || defined(__NetBSD__) ||  \
-    defined(__QNX__)
+    defined(__QNX__) || \
+    defined(__KOS__) // 03.11.2022 adapted for KasperskyOS
 #define ABSL_HAVE_MMAP 1
 #endif
 
