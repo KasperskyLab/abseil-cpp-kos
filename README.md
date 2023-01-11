@@ -1,21 +1,12 @@
-# Abseil - C++ Common Libraries
+# Abseil adaptation for KasperskyOS - C++ Common Libraries
 
-The repository contains the Abseil C++ library code. Abseil is an open-source
-collection of C++ code (compliant to C++11) designed to augment the C++
-standard library.
+This is a fork of [Abseil C++](https://github.com/abseil/abseil-cpp) project adapted to be used with KasperskyOS. For more information about the target OS, please refer to [KaspeksyOS Community Edition](https://support.kaspersky.com/help/KCE/1.1/en-US/community_edition.htm).
 
-## Table of Contents
+The repository contains the Abseil C++ library code. Abseil is an open-source collection of C++ code (compliant to C++11) designed to augment the C++ standard library.
 
-- [About Abseil](#about)
-- [Quickstart](#quickstart)
-- [Building Abseil](#build)
-- [Support](#support)
-- [Codemap](#codemap)
-- [Releases](#releases)
-- [License](#license)
-- [Links](#links)
+For general information on using Abseil, its features and so on, please see the [Abseil website](https://abseil.io/about).
 
-<a name="about"></a>
+
 ## About Abseil
 
 Abseil is an open-source collection of C++ library code designed to augment
@@ -33,7 +24,7 @@ just found that many of these utilities serve a purpose within our code
 base, and we now want to provide those resources to the C++ community as
 a whole.
 
-<a name="quickstart"></a>
+
 ## Quickstart
 
 If you want to just get started, make sure you at least run through the
@@ -41,8 +32,10 @@ If you want to just get started, make sure you at least run through the
 contains information about setting up your development environment, downloading
 the Abseil code, running tests, and getting a simple binary working.
 
-<a name="build"></a>
+
 ## Building Abseil
+
+For a default build and use, you need to install the KasperskyOS Community Edition SDK on your system. The latest version of the SDK can be downloaded from this [link](https://os.kaspersky.com/development/). The Abseil source code has been checked on the KasperskyOS Community Edition SDK version 1.1.0.
 
 [Bazel](https://bazel.build) and [CMake](https://cmake.org/) are the official
 build systems for Abseil.
@@ -53,13 +46,6 @@ on building Abseil using the Bazel build system.
 If you require CMake support, please check the [CMake build
 instructions](CMake/README.md) and [CMake
 Quickstart](https://abseil.io/docs/cpp/quickstart-cmake).
-
-## Support
-
-Abseil is officially supported on many platforms. See the [Abseil
-platform support
-guide](https://abseil.io/docs/cpp/platforms/platforms) for details on
-supported operating systems, compilers, CPUs, etc.
 
 ## Codemap
 
@@ -116,14 +102,10 @@ Abseil contains the following C++ library components:
 * [`utility`](absl/utility/)
   <br /> The `utility` library contains utility and helper code.
 
-## Releases
+## Contributing
+Please see the [Contributing](CONTRIBUTING.md) page for generic info.
 
-Abseil recommends users "live-at-head" (update to the latest commit from the
-master branch as often as possible). However, we realize this philosophy doesn't
-work for every project, so we also provide [Long Term Support
-Releases](https://github.com/abseil/abseil-cpp/releases) to which we backport
-fixes for severe bugs. See our [release
-management](https://abseil.io/about/releases) document for more details.
+We'll follow the parent project contributing rules but would consider to accept only KasperskyOS-specific changes, so for that it is advised to use pull-requests.
 
 ## License
 
@@ -134,9 +116,6 @@ license. See [LICENSE](LICENSE) for more information.
 
 For more information about Abseil:
 
-* Consult our [Abseil Introduction](https://abseil.io/about/intro)
-* Read [Why Adopt Abseil](https://abseil.io/about/philosophy) to understand our
-  design philosophy.
-* Peruse our
-  [Abseil Compatibility Guarantees](https://abseil.io/about/compatibility) to
-  understand both what we promise to you, and what we expect of you in return.
+* Consult [Abseil Introduction](https://abseil.io/about/intro)
+* Read [Why Adopt Abseil](https://abseil.io/about/philosophy) to understand the design philosophy.
+* Peruse [Abseil Compatibility Guarantees](https://abseil.io/about/compatibility).
