@@ -1,0 +1,41 @@
+/*
+ * © 2024 AO Kaspersky Lab
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Description of a solution security policy. */
+
+/* Assign the execute interface. */
+execute: kl.core.Execute
+
+/* Include the base.psl file containing a formal
+ * description of the Base security model. */
+use nk.base._
+
+/* Include EDL files. */
+use EDL Einit
+use EDL kl.core.Core
+use EDL example.Hello
+
+@INIT_EXTERNAL_ENTITIES@
+
+/* This solution security policy allows any interaction between any processes,
+ * and between these processes and the KasperskyOS kernel.
+ * The "granted" decision will always be received
+ * when these processes query the Kaspersky Security Module.
+ * This policy can be used only as a stub during the early stages
+ * of development of a KasperskyOS-based solution
+ * so that the Kaspersky Security Module does not interfere with interactions.
+ * It would be unacceptable to apply such a policy
+ * in a real-world KasperskyOS-based solution. */
+use nonsecurity._

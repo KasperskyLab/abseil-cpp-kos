@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// © 2022 AO Kaspersky Lab. All Rights Reserved
-//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 // Allow dynamic symbol lookup in an in-memory Elf image.
 //
@@ -354,7 +354,7 @@ void ElfMemImage::SymbolIterator::Update(int increment) {
   const ElfW(Versym) *version_symbol = image->GetVersym(index_);
   ABSL_RAW_CHECK(symbol && version_symbol, "");
   const char *const symbol_name = image->GetDynstr(symbol->st_name);
-#if defined(__NetBSD__) || defined(__KOS__) // 03.11.2022 adapted for KasperskyOS
+#if defined(__NetBSD__) || defined(__KOS__)
   const int version_index = version_symbol->vs_vers & VERSYM_VERSION;
 #else
   const ElfW(Versym) version_index = version_symbol[0] & VERSYM_VERSION;

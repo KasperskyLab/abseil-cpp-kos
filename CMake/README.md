@@ -170,6 +170,11 @@ And finally install:
 cmake --build /temporary/build/abseil-cpp --target install
 ```
 
+## Build and install for KasperskyOS
+
+To build Abseil for KasperskyOS use **cross-build.sh** script from *kos* directory.
+For more details see this [README](../kos/README.md).
+
 # CMake Option Synposis
 
 ## Enable Standard CMake Installation

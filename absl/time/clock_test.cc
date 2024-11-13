@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/time/clock.h"
 
@@ -18,14 +21,14 @@
 #if defined(ABSL_HAVE_ALARM)
 #include <signal.h>
 #include <unistd.h>
-#ifdef _AIX
-// sig_t is not defined in AIX.
+#if defined(_AIX) || defined(__KOS__)
+// sig_t is not defined in AIX and KasperskyOS.
 typedef void (*sig_t)(int);
 #endif
+
 #elif defined(__linux__) || defined(__APPLE__)
 #error all known Linux and Apple targets have alarm
 #endif
-
 #include "gtest/gtest.h"
 #include "absl/time/time.h"
 

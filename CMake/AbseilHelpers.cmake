@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# © 2024 AO Kaspersky Lab
+# Licensed under the Apache License, Version 2.0 (the "License")
 
 include(CMakeParseArguments)
 include(AbseilConfigureCopts)
@@ -379,7 +381,6 @@ function(absl_cc_test)
   )
 
   set(_NAME "absl_${ABSL_CC_TEST_NAME}")
-
   add_executable(${_NAME} "")
   target_sources(${_NAME} PRIVATE ${ABSL_CC_TEST_SRCS})
   target_include_directories(${_NAME}
@@ -436,6 +437,10 @@ function(absl_cc_test)
   endif()
 
   add_test(NAME ${_NAME} COMMAND ${_NAME})
+
+  if(KOS)
+    kos_gtest(${_NAME})
+  endif()
 endfunction()
 
 

@@ -12,6 +12,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/flags/parse.h"
 
@@ -861,8 +864,9 @@ TEST_F(ParseDeathTest, TestSimpleHelpFlagHandling) {
       "testbin",
       "--help",
   };
-
+#ifndef __KOS__ // Not supported on KasperskyOS
   EXPECT_EXIT(InvokeParse(in_args1), testing::ExitedWithCode(1), "");
+#endif // __KOS__ 
 
   const char* in_args2[] = {
       "testbin",

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# © 2024 AO Kaspersky Lab
+# Licensed under the Apache License, Version 2.0 (the "License")
 
 # Most widely used distributions have cmake 3.5 or greater available as of March
 # 2019.  A notable exception is RHEL-7 (CentOS7).  You can install a current
@@ -46,7 +48,7 @@ if (POLICY CMP0091)
   cmake_policy(SET CMP0091 NEW)
 endif (POLICY CMP0091)
 
-project(absl LANGUAGES CXX VERSION 20220623)
+project(absl LANGUAGES C CXX VERSION 20220623)
 include(CTest)
 
 # Output directory is correct by default for most build setups. However, when
@@ -130,9 +132,13 @@ set(ABSL_LOCAL_GOOGLETEST_DIR "/usr/src/googletest" CACHE PATH
   )
 
 if(BUILD_TESTING AND ABSL_BUILD_TESTING)
+  if(KOS)
+    include (${KOS_DIR}/cmake/tests.cmake)
+  endif()
+
   ## check targets
-  if (ABSL_USE_EXTERNAL_GOOGLETEST)
-    if (ABSL_FIND_GOOGLETEST)
+  if(ABSL_USE_EXTERNAL_GOOGLETEST)
+    if(ABSL_FIND_GOOGLETEST)
       find_package(GTest REQUIRED)
     elseif(NOT TARGET GTest::gtest)
       if(TARGET gtest)
@@ -173,7 +179,6 @@ add_subdirectory(absl)
 
 if(ABSL_ENABLE_INSTALL)
   
-
   # install as a subdirectory only
   install(EXPORT ${PROJECT_NAME}Targets
     NAMESPACE absl::

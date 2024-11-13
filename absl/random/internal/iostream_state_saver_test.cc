@@ -281,7 +281,6 @@ TEST(IOStreamStateSaver, RoundTripLongDoubles) {
   //
   // So it is best to consider long double a best-effort extended precision
   // type.
-
   static_assert(
       stream_precision_helper<long double>::kPrecision >= 36,
       "stream_precision_helper<long double>::kPrecision should be at least 36");
