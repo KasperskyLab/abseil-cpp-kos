@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// © 2022 AO Kaspersky Lab. All Rights Reserved
-//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 // Allow dynamic symbol lookup in the kernel VDSO page.
 //
@@ -53,7 +53,7 @@
 #define AT_SYSINFO_EHDR 33  // for crosstoolv10
 #endif
 
-#if defined(__NetBSD__) || defined(__KOS__) // 03.11.2022 adapted for KasperskyOS
+#if defined(__NetBSD__) || defined(__KOS__)
 using Elf32_auxv_t = Aux32Info;
 using Elf64_auxv_t = Aux64Info;
 #endif
@@ -115,7 +115,7 @@ const void *VDSOSupport::Init() {
     ElfW(auxv_t) aux;
     while (read(fd, &aux, sizeof(aux)) == sizeof(aux)) {
       if (aux.a_type == AT_SYSINFO_EHDR) {
-#if defined(__NetBSD__) || defined(__KOS__) // 03.11.2022 adapted for KasperskyOS
+#if defined(__NetBSD__) || defined(__KOS__)
         vdso_base_.store(reinterpret_cast<void *>(aux.a_v),
                          std::memory_order_relaxed);
 #else

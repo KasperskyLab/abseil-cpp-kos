@@ -31,6 +31,7 @@
 #include "absl/flags/usage_config.h"
 #include "absl/strings/match.h"
 #include "absl/strings/string_view.h"
+#include "absl/strings/str_cat.h"
 
 ABSL_FLAG(int, usage_reporting_test_flag_01, 101,
           "usage_reporting_test_flag_01 help message");
@@ -118,7 +119,7 @@ TEST_F(UsageReportingDeathTest, TestSetProgramUsageMessage) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       absl::SetProgramUsageMessage("custom usage message"),
-      ::testing::HasSubstr("SetProgramUsageMessage() called twice"));
+      "SetProgramUsageMessage() called twice");
 }
 
 // --------------------------------------------------------------------

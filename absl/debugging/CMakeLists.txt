@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# © 2024 AO Kaspersky Lab
+# Licensed under the Apache License, Version 2.0 (the "License")
 
 find_library(EXECINFO_LIBRARY execinfo)
 
@@ -75,27 +77,31 @@ absl_cc_library(
   PUBLIC
 )
 
-absl_cc_test(
-  NAME
-    symbolize_test
-  SRCS
-    "symbolize_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-    $<$<BOOL:${MSVC}>:-Z7>
-  LINKOPTS
-    $<$<BOOL:${MSVC}>:-DEBUG>
-  DEPS
-    absl::stack_consumption
-    absl::symbolize
-    absl::base
-    absl::config
-    absl::core_headers
-    absl::memory
-    absl::raw_logging_internal
-    absl::strings
-    GTest::gmock
+if(KOS)
+  message(WARNING "Skip symbolize_test on KasperskyOS due to problems with absl::stack_consumption compilation")
+else()
+  absl_cc_test(
+    NAME
+      symbolize_test
+    SRCS
+      "symbolize_test.cc"
+    COPTS
+      ${ABSL_TEST_COPTS}
+      $<$<BOOL:${MSVC}>:-Z7>
+    LINKOPTS
+      $<$<BOOL:${MSVC}>:-DEBUG>
+    DEPS
+      absl::stack_consumption
+      absl::symbolize
+      absl::base
+      absl::config
+      absl::core_headers
+      absl::memory
+      absl::raw_logging_internal
+      absl::strings
+      GTest::gmock
 )
+endif()
 
 # Internal-only target, do not depend on directly.
 absl_cc_library(
@@ -189,22 +195,26 @@ absl_cc_library(
   PUBLIC
 )
 
-absl_cc_test(
-  NAME
-    demangle_test
-  SRCS
-    "internal/demangle_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-  DEPS
-    absl::demangle_internal
-    absl::stack_consumption
-    absl::config
-    absl::core_headers
-    absl::memory
-    absl::raw_logging_internal
-    GTest::gmock_main
-)
+if(KOS)
+  message(WARNING "Skip demangle_test on KasperskyOS due to problems with absl::stack_consumption compilation")
+else()
+  absl_cc_test(
+    NAME
+      demangle_test
+    SRCS
+      "internal/demangle_test.cc"
+    COPTS
+      ${ABSL_TEST_COPTS}
+    DEPS
+      absl::demangle_internal
+      absl::stack_consumption
+      absl::config
+      absl::core_headers
+      absl::memory
+      absl::raw_logging_internal
+      GTest::gmock_main
+  )
+endif()
 
 absl_cc_library(
   NAME
@@ -236,7 +246,7 @@ absl_cc_test(
     GTest::gmock_main
 )
 
-# Internal-only target, do not depend on directly.
+# POSIX sigaltstack not implemented on KasperskyOS so stack_consumption library can't be compiled.
 absl_cc_library(
   NAME
     stack_consumption
@@ -253,6 +263,9 @@ absl_cc_library(
   TESTONLY
 )
 
+if(KOS)
+  message(WARNING "Skip stack_consumption_test on KasperskyOS due to problems with absl::stack_consumption compilation")
+else()
 absl_cc_test(
   NAME
     stack_consumption_test
@@ -266,6 +279,7 @@ absl_cc_test(
     absl::raw_logging_internal
     GTest::gmock_main
 )
+endif()
 
 # component target
 absl_cc_library(

@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/strings/str_split.h"
 
@@ -944,7 +947,8 @@ TEST(Delimiter, ByLength) {
 
 TEST(Split, WorksWithLargeStrings) {
 #if defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
-    defined(ABSL_HAVE_MEMORY_SANITIZER) || defined(ABSL_HAVE_THREAD_SANITIZER)
+    defined(ABSL_HAVE_MEMORY_SANITIZER) || defined(ABSL_HAVE_THREAD_SANITIZER) || \
+    defined(__KOS__)
   constexpr size_t kSize = (uint32_t{1} << 26) + 1;  // 64M + 1 byte
 #else
   constexpr size_t kSize = (uint32_t{1} << 31) + 1;  // 2G + 1 byte

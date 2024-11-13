@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/container/btree_test.h"
 
@@ -3012,7 +3015,7 @@ TEST(Btree, InvalidComparatorsCaught) {
       }
     };
     absl::btree_set<int, ZeroAlwaysLessCmp> set;
-    EXPECT_DEATH(set.insert({0, 1, 2}), "is_self_equivalent");
+    EXPECT_DEATH_IF_SUPPORTED(set.insert({0, 1, 2}), "is_self_equivalent");
   }
   {
     struct ThreeWayAlwaysLessCmp {
@@ -3021,7 +3024,7 @@ TEST(Btree, InvalidComparatorsCaught) {
       }
     };
     absl::btree_set<int, ThreeWayAlwaysLessCmp> set;
-    EXPECT_DEATH(set.insert({0, 1, 2}), "is_self_equivalent");
+    EXPECT_DEATH_IF_SUPPORTED(set.insert({0, 1, 2}), "is_self_equivalent");
   }
   {
     struct SumGreaterZeroCmp {
@@ -3033,7 +3036,7 @@ TEST(Btree, InvalidComparatorsCaught) {
     };
     absl::btree_set<int, SumGreaterZeroCmp> set;
     // Note: '!' only needs to be escaped when it's the first character.
-    EXPECT_DEATH(set.insert({0, 1, 2}),
+    EXPECT_DEATH_IF_SUPPORTED(set.insert({0, 1, 2}),
                  R"regex(\!lhs_comp_rhs \|\| !comp\(\)\(rhs, lhs\))regex");
   }
   {
@@ -3048,7 +3051,7 @@ TEST(Btree, InvalidComparatorsCaught) {
       }
     };
     absl::btree_set<int, ThreeWaySumGreaterZeroCmp> set;
-    EXPECT_DEATH(set.insert({0, 1, 2}), "lhs_comp_rhs < 0 -> rhs_comp_lhs > 0");
+    EXPECT_DEATH_IF_SUPPORTED(set.insert({0, 1, 2}), "lhs_comp_rhs < 0 -> rhs_comp_lhs > 0");
   }
 }
 #endif
@@ -3064,14 +3067,14 @@ TEST(Btree, InvalidIteratorUse) {
     for (int i = 0; i < 10; ++i) set.insert(i);
     auto it = set.begin();
     set.erase(it++);
-    EXPECT_DEATH(set.erase(it++), "invalidated iterator");
+    EXPECT_DEATH_IF_SUPPORTED(set.erase(it++), "invalidated iterator");
   }
   {
     absl::btree_set<int> set;
     for (int i = 0; i < 10; ++i) set.insert(i);
     auto it = set.insert(20).first;
     set.insert(30);
-    EXPECT_DEATH(*it, "invalidated iterator");
+    EXPECT_DEATH_IF_SUPPORTED(*it, "invalidated iterator");
   }
   {
     absl::btree_set<int> set;
@@ -3079,7 +3082,7 @@ TEST(Btree, InvalidIteratorUse) {
     auto it = set.find(5000);
     ASSERT_NE(it, set.end());
     set.erase(1);
-    EXPECT_DEATH(*it, "invalidated iterator");
+    EXPECT_DEATH_IF_SUPPORTED(*it, "invalidated iterator");
   }
 }
 #endif

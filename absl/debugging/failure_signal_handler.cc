@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// © 2022 AO Kaspersky Lab. All Rights Reserved
-//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/debugging/failure_signal_handler.h"
 
@@ -49,7 +49,7 @@
 #include "absl/debugging/internal/examine_stack.h"
 #include "absl/debugging/stacktrace.h"
 
-#if !defined(_WIN32) && !defined(__KOS__) // 03.11.2022 adapted for KasperskyOS
+#if !defined(_WIN32) && !defined(__KOS__)
 #define ABSL_HAVE_SIGACTION
 // Apple WatchOS and TVOS don't allow sigaltstack
 #if !(defined(TARGET_OS_WATCH) && TARGET_OS_WATCH) && \

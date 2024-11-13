@@ -1,6 +1,6 @@
-© 2022 AO Kaspersky Lab. All Rights Reserved.
+© 2024 AO Kaspersky Lab
 
-This software is an adapted version of the Abseil - C++ Common Libraries project for use on Kaspersky OS.
+This software is an adapted version of the Abseil - C++ Common Libraries project for use on KasperskyOS.
 
 Copyright 2019 The Abseil Authors.
 
