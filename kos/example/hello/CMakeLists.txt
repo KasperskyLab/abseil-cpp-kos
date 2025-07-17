@@ -1,4 +1,4 @@
-# © 2024 AO Kaspersky Lab
+# © 2025 AO Kaspersky Lab
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -18,7 +18,7 @@ project(hello)
 include(platform/nk)
 
 # Set the linker and compiler flags.
-project_header_default("STANDARD_GNU_11:YES" "STRICT_WARNINGS:YES")
+project_header_default("STANDARD_GNU_17:YES" "STRICT_WARNINGS:YES")
 
 find_package(absl)
 

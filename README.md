@@ -11,7 +11,7 @@ the C++ standard library. For more information about the original abseil-cpp lib
 [Abseil website](https://abseil.io/).
 
 For additional details on KasperskyOS, including its limitations and known issues, please refer to the
-[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_community_edition).
+[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=community_edition).
 
 ## Table of contents
 - [Abseil adaptation for KasperskyOS (C++ Common Libraries)](#abseil-adaptation-for-kasperskyos-c-common-libraries)
@@ -32,11 +32,11 @@ For additional details on KasperskyOS, including its limitations and known issue
 
 ### Prerequisites
 
-1. [Install](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_sdk_install_and_remove)
+1. [Install](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=sdk_install_and_remove)
 KasperskyOS Community Edition SDK. You can download the latest version of the KasperskyOS Community
 Edition for free from [os.kaspersky.com](https://os.kaspersky.com/development/). The minimum required
-version of KasperskyOS Community Edition SDK is 1.2. For more information, see
-[System requirements](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_system_requirements).
+version of KasperskyOS Community Edition SDK is 1.3. For more information, see
+[System requirements](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=system_requirements).
 1. Copy source files to your project directory. The example of KasperskyOS-based solution are located
 in the [`./kos`](kos) directory.
 
@@ -83,11 +83,11 @@ For example:
 ```sh
 $ ./cross-build.sh -s /opt/KasperskyOS-Community-Edition-<version> -i /opt/libs
 ```
-[⬆ Back to Top](#Table-of-contents)
+[⬆ Back to Top](#table-of-contents)
 
 #### Tests
 
-The Abseil library's [tests](src/third_party/googletest) have been adapted to run on KasperskyOS.
+The Abseil library's [tests](absl) have been adapted to run on KasperskyOS.
 The tests have the following limitations:
 
 * Unit tests for KasperskyOS are currently available only for QEMU.
@@ -147,12 +147,12 @@ For example, to start executing all tests, use the following command:
 ```
 $ SDK_PREFIX=/opt/KasperskyOS-Community-Edition-<version> ./run-tests.sh
 ```
-[⬆ Back to Top](#Table-of-contents)
+[⬆ Back to Top](#table-of-contents)
 
 ## Usage
 
 When you develop a KasperskyOS-based solution, use the
-[recommended structure of project directories](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_cmake_using_sdk_cmake)
+[recommended structure of project directories](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=cmake_using_sdk_cmake)
 to simplify usage of CMake scripts.
 
 To include the Abseil library in a KasperskyOS-based solution, it is recommended to use a previously
@@ -171,7 +171,25 @@ tests using that framework.
 
 Registered trademarks and endpoint marks are the property of their respective owners.
 
-GoogleTest is a trademark of Google LLC.
+AIX, s3, POWER, POWER8, PowerPC are trademarks of International Business Machines Corporation, registered in many jurisdictions worldwide.
+
+AMD, AMD64 are trademarks or a registered trademarks of Advanced Micro Devices, Inc.
+
+Android, Closure, Google, GoogleTest are trademarks of Google LLC.
+
+Apple, macOS, Mac OS, Xcode are trademarks of Apple Inc.
+
+Arm is a registered trademark of Arm Limited (or its subsidiaries) in the US and/or elsewhere.
+
+Core, Intel, Itanium, XMM are trademarks of Intel Corporation or its subsidiaries.
+
+Linux is the registered trademark of Linus Torvalds in the U.S. and other countries.
+
+Microsoft, Visual C++, Visual Studio, Win32, Windows are trademarks of the Microsoft group of companies.
+
+Python is a trademark or registered trademark of the Python Software Foundation.
+
+IOS is a registered trademark of Cisco Systems, Inc. and/or its affiliates in the United States and certain other countries.
 
 Raspberry Pi is a trademark of the Raspberry Pi Foundation.
 
@@ -182,9 +200,9 @@ detailed instructions on code contribution.
 
 ## Licensing
 
-This project is licensed under the terms of the Apache license. See [LICENSE](LICENSE) for
+This project is licensed under the terms of the Apache License. See [LICENSE](LICENSE) for
 more information.
 
-[⬆ Back to Top](#Table-of-contents)
+[⬆ Back to Top](#table-of-contents)
 
-© 2024 AO Kaspersky Lab
+© 2025 AO Kaspersky Lab

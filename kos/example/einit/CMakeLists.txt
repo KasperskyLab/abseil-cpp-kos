@@ -1,4 +1,4 @@
-# © 2024 AO Kaspersky Lab
+# © 2025 AO Kaspersky Lab
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -19,7 +19,7 @@ include(platform/image)
 include(${KL_SDK_ROOT_PATH}/common/build-sd-image.cmake)
 
 # Set the linker and compiler flags.
-project_header_default("STANDARD_GNU_11:YES" "STRICT_WARNINGS:NO")
+project_header_default("STANDARD_GNU_17:YES" "STRICT_WARNINGS:NO")
 
 # Set the values of the variables.
 set(ENTITIES Hello)
@@ -41,6 +41,36 @@ if(PLATFORM_SUPPORTS_DYNAMIC_LINKING)
   set(QEMU_DEPENDENCIES ${QEMU_DISK_IMAGE})
 endif()
 
+add_custom_target(${QEMU_DISK_IMAGE}
+  DEPENDS copylibs_qemu
+  COMMAND ${KL_SDK_ROOT_PATH}/common/prepare_hdd_img.sh
+          -d ${IMAGE_FS} -s 64 -f fat32 -img ${QEMU_DISK_IMAGE}
+)
+
+# Create a top-level CMake target named kos-qemu-image which
+# can be used when building a solution image to be started in QEMU.
+build_kos_qemu_image(kos-qemu-image
+  EINIT_ENTITY EinitQemu
+  QEMU_FLAGS "${QEMU_FLAGS}"
+  CONNECTIONS_CFG ${CONNECTIONS_CFG_FILE}
+  SECURITY_PSL ${SECURITY_PSL_FILE}
+  QEMU_DEPENDENCIES ${QEMU_DEPENDENCIES}
+  PACK_DEPS_COPY_ONLY ON
+  PACK_DEPS_LIBS_PATH ${LIBS_PATH}
+  PACK_DEPS_COPY_TARGET copylibs_qemu
+  IMAGE_FILES ${ENTITIES}
+)
+
+if(BOARD STREQUAL "RADXA_ROCK_3A")
+  # Radxa Rock 3a uses mmc1 instead of default mmc0 for VfsSdCardFs.
+  set_target_properties (${precompiled_vfsVfsSdCardFs}
+  PROPERTIES
+      EXTRA_ENV "\
+        ROOTFS: mmc1,0 / fat32 0
+        VFS_FILESYSTEM_BACKEND: server:kl.VfsSdCardFs"
+  )
+endif()
+
 # Create a top-level CMake target named kos-image which can be used
 # when building a solution image to be started on the hardware platform.
 build_kos_hw_image(kos-image
@@ -60,24 +90,4 @@ add_dependencies(kos-image copylibs_hw)
 build_sd_image(sd-image
   KOS_IMAGE_TARGET kos-image
   IMAGE_FS ${IMAGE_FS}
-)
-
-add_custom_target(${QEMU_DISK_IMAGE}
-  DEPENDS copylibs_qemu
-  COMMAND ${KL_SDK_ROOT_PATH}/common/prepare_hdd_img.sh
-          -d ${IMAGE_FS} -s 64 -f fat32 -img ${QEMU_DISK_IMAGE}
-)
-
-# Create a top-level CMake target named kos-qemu-image which
-# can be used when building a solution image to be started in QEMU.
-build_kos_qemu_image(kos-qemu-image
-  EINIT_ENTITY EinitQemu
-  QEMU_FLAGS "${QEMU_FLAGS}"
-  CONNECTIONS_CFG ${CONNECTIONS_CFG_FILE}
-  SECURITY_PSL ${SECURITY_PSL_FILE}
-  QEMU_DEPENDENCIES ${QEMU_DEPENDENCIES}
-  PACK_DEPS_COPY_ONLY ON
-  PACK_DEPS_LIBS_PATH ${LIBS_PATH}
-  PACK_DEPS_COPY_TARGET copylibs_qemu
-  IMAGE_FILES ${ENTITIES}
 )

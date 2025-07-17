@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/status/statusor.h"
 
@@ -395,7 +398,7 @@ TEST(StatusOrDeathTest, TestPointerValueNotOkConst) {
   EXPECT_DEATH_OR_THROW(thing.value(), absl::CancelledError());
 }
 
-#if GTEST_HAS_DEATH_TEST
+#if defined(GTEST_HAS_DEATH_TEST)
 TEST(StatusOrDeathTest, TestStatusCtorStatusOk) {
   EXPECT_DEBUG_DEATH(
       {
@@ -420,7 +423,7 @@ TEST(StatusOrDeathTest, TestPointerStatusCtorStatusOk) {
       },
       "An OK status is not a valid constructor argument");
 }
-#endif
+#endif // GTEST_HAS_DEATH_TEST
 
 TEST(StatusOr, ValueAccessor) {
   const int kIntValue = 110;

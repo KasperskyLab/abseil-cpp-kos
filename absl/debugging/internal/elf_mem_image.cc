@@ -16,7 +16,6 @@
 // Licensed under the Apache License, Version 2.0 (the "License")
 
 // Allow dynamic symbol lookup in an in-memory Elf image.
-//
 
 #include "absl/debugging/internal/elf_mem_image.h"
 

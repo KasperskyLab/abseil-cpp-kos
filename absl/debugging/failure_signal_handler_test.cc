@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/debugging/failure_signal_handler.h"
 
@@ -34,7 +36,7 @@ namespace {
 
 using testing::StartsWith;
 
-#if GTEST_HAS_DEATH_TEST
+#if defined(GTEST_HAS_DEATH_TEST)
 
 // For the parameterized death tests. GetParam() returns the signal number.
 using FailureSignalHandlerDeathTest = ::testing::TestWithParam<int>;

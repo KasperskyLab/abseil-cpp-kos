@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/hash/internal/low_level_hash.h"
 
@@ -40,7 +43,7 @@ static uint64_t Mix(uint64_t v0, uint64_t v1) {
 }
 
 uint64_t LowLevelHash(const void* data, size_t len, uint64_t seed,
-                      const uint64_t salt[]) {
+                      const uint64_t salt[5]) {
   const uint8_t* ptr = static_cast<const uint8_t*>(data);
   uint64_t starting_length = static_cast<uint64_t>(len);
   uint64_t current_state = seed ^ salt[0];

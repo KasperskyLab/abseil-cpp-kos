@@ -1,4 +1,4 @@
-# © 2024 AO Kaspersky Lab
+# © 2025 AO Kaspersky Lab
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -23,6 +23,15 @@ initialize_platform()
 # for documentation of source texts.
 include(platform/doxygen)
 add_project_documentation_main_target()
+
+# Detect board.
+if(CMAKE_SYSTEM_SOC STREQUAL "BCM2711")
+  set(BOARD "RPI4_BCM2711")
+elseif(CMAKE_SYSTEM_SOC STREQUAL "RK3568")
+  set(BOARD "RADXA_ROCK_3A")
+else()
+  message(FATAL_ERROR "Unsupported board for SoC '${CMAKE_SYSTEM_SOC}'")
+endif()
 
 add_subdirectory(hello)
 add_subdirectory(einit)

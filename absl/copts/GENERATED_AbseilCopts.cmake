@@ -152,7 +152,7 @@ list(APPEND ABSL_RANDOM_HWAES_ARM32_FLAGS
 )
 
 list(APPEND ABSL_RANDOM_HWAES_ARM64_FLAGS
-    "-march=armv8-a+crypto"
+    "-march=armv8-a"
 )
 
 list(APPEND ABSL_RANDOM_HWAES_MSVC_X64_FLAGS

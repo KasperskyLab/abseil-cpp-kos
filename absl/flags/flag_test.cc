@@ -12,6 +12,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/flags/flag.h"
 
@@ -733,7 +736,7 @@ TEST_F(FlagTest, TestCustomUDT) {
 
 // MSVC produces link error on the type mismatch.
 // Linux does not have build errors and validations work as expected.
-#if !defined(_WIN32) && GTEST_HAS_DEATH_TEST
+#if !defined(_WIN32) && defined(GTEST_HAS_DEATH_TEST)
 
 using FlagDeathTest = FlagTest;
 
