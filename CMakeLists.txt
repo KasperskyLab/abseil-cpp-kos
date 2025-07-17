@@ -51,6 +51,10 @@ endif (POLICY CMP0091)
 project(absl LANGUAGES C CXX VERSION 20220623)
 include(CTest)
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  add_compile_options(-Wno-deprecated-builtins)
+endif()
+
 # Output directory is correct by default for most build setups. However, when
 # building Abseil as a DLL, it is important to have the DLL in the same
 # directory as the executable using it. Thus, we put all executables in a single

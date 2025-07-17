@@ -153,7 +153,7 @@ ABSL_RANDOM_HWAES_ARM32_FLAGS = [
 ]
 
 ABSL_RANDOM_HWAES_ARM64_FLAGS = [
-    "-march=armv8-a+crypto",
+    "-march=armv8-a",
 ]
 
 ABSL_RANDOM_HWAES_MSVC_X64_FLAGS = [

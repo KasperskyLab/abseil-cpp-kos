@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# © 2024 AO Kaspersky Lab
+# © 2025 AO Kaspersky Lab
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -17,7 +17,7 @@ EXAMPLE_DIR="$(dirname "$(realpath "${0}")")"
 EXAMPLE_BUILD_DIR="${EXAMPLE_DIR}/build"
 KOS_DIR="$(dirname ${EXAMPLE_DIR})"
 ABSEIL_BUILD_DIR="${KOS_DIR}/build"
-ABSEIL_INSTALL_DIR="${KOS_DIR}/install"
+ABSEIL_INSTALL_DIR="${KOS_DIR}/../install/kos"
 BUILD_TARGET=
 
 function PrintHelp () {
@@ -30,9 +30,7 @@ USAGE:
 
 BUILD_TARGET:
     qemu - to build and run the example on QEMU.
-    rpi  - to create a file system image called rpi4kos.img for a bootable SD card.
-           This image can be directly copied onto an SD card using the dd utility,
-           allowing the example to be run on Raspberry Pi.
+    hw   - to create a file system image bootable device for hardware.
 
 OPTIONS:
     -h, --help
@@ -46,7 +44,7 @@ while [ -n "${1}" ]; do
     -h | --help) PrintHelp
         exit 0;;
     qemu) BUILD_TARGET=sim;;
-    rpi) BUILD_TARGET=sd-image;;
+    hw) BUILD_TARGET=sd-image;;
     *) echo "Unknown option -'${1}'."
         PrintHelp
         exit 1;;
@@ -55,7 +53,7 @@ while [ -n "${1}" ]; do
 done
 
 if [ -z "${BUILD_TARGET}" ]; then
-    echo "BUILD_TARGET is not specified. Specify the value: 'qemu' or 'rpi'."
+    echo "BUILD_TARGET is not specified. Specify the value: 'qemu' or 'hw'."
     PrintHelp
     exit 1
 fi
@@ -113,7 +111,6 @@ fi
 # Build example.
 "${SDK_PREFIX}/toolchain/bin/cmake" -G "Unix Makefiles" -B "${EXAMPLE_BUILD_DIR}" \
       -D CMAKE_BUILD_TYPE:STRING=Debug \
-      -D BOARD:STRING=RPI4_BCM2711 \
       -D CMAKE_TOOLCHAIN_FILE="${SDK_PREFIX}/toolchain/share/toolchain-${TARGET}${TOOLCHAIN_SUFFIX}.cmake" \
       -D CMAKE_FIND_ROOT_PATH="${ABSEIL_INSTALL_DIR};${PREFIX_DIR}/sysroot-${TARGET}" \
       "${EXAMPLE_DIR}" && "${SDK_PREFIX}/toolchain/bin/cmake" --build "${EXAMPLE_BUILD_DIR}" -j`nproc` --target ${BUILD_TARGET}

@@ -138,6 +138,7 @@ function Generate() {
              -D ABSL_BUILD_TESTING=ON \
              -D ABSL_USE_EXTERNAL_GOOGLETEST=OFF \
              -D ABSL_USE_GOOGLETEST_HEAD=ON \
+             -D ABSL_PROPAGATE_CXX_STD=ON \
              -D KOS_DIR="${KOS_DIR}" \
              -D CMAKE_BUILD_TYPE:STRING=Debug \
              -D CMAKE_TOOLCHAIN_FILE="${SDK_PREFIX}/toolchain/share/toolchain-${TARGET}${TOOLCHAIN_SUFFIX}.cmake" \

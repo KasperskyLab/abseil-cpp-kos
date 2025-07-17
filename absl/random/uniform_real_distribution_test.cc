@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/random/uniform_real_distribution.h"
 
@@ -194,10 +197,12 @@ TYPED_TEST(UniformRealDistributionTest, ParamSerializeTest) {
 #pragma warning(disable:4756)  // Constant arithmetic overflow.
 #endif
 TYPED_TEST(UniformRealDistributionTest, ViolatesPreconditionsDeathTest) {
+#if defined(GTEST_HAS_DEATH_TEST) || defined(NDEBUG)
   using DistributionType = absl::uniform_real_distribution<TypeParam>;
   using real_type = TypeParam;
+#endif
 
-#if GTEST_HAS_DEATH_TEST
+#if defined(GTEST_HAS_DEATH_TEST)
   // Hi < Lo
   EXPECT_DEBUG_DEATH({ DistributionType dist(10.0, 1.0); }, "");
 

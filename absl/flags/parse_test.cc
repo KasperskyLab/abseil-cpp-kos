@@ -860,13 +860,14 @@ TEST_F(ParseTest, TestIgnoreUndefinedFlags) {
 // --------------------------------------------------------------------
 
 TEST_F(ParseDeathTest, TestSimpleHelpFlagHandling) {
+#ifndef __KOS__ // Not supported on KasperskyOS
   const char* in_args1[] = {
       "testbin",
       "--help",
   };
-#ifndef __KOS__ // Not supported on KasperskyOS
+
   EXPECT_EXIT(InvokeParse(in_args1), testing::ExitedWithCode(1), "");
-#endif // __KOS__ 
+#endif // __KOS__
 
   const char* in_args2[] = {
       "testbin",

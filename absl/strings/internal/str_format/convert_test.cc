@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include <errno.h>
 #include <stdarg.h>
@@ -1237,7 +1240,7 @@ TEST_F(FormatConvertTest, ExpectedFailures) {
 TEST_F(FormatConvertTest, GlibcHasCorrectTraits) {
 #if !defined(__GLIBC__) || !defined(__x86_64__)
   return;
-#endif
+#else
   const NativePrintfTraits &native_traits = VerifyNativeImplementation();
   // If one of the following tests break then it is either because the above PP
   // macro guards failed to exclude a new platform (likely) or because something
@@ -1249,6 +1252,7 @@ TEST_F(FormatConvertTest, GlibcHasCorrectTraits) {
   EXPECT_TRUE(
       native_traits.hex_float_uses_minimal_precision_when_not_specified);
   EXPECT_TRUE(native_traits.hex_float_optimizes_leading_digit_bit_count);
+#endif // !__GLIBC__ || !__x86_64__
 }
 
 }  // namespace

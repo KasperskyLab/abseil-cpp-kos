@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// © 2024 AO Kaspersky Lab
+// Licensed under the Apache License, Version 2.0 (the "License")
 
 #include "absl/strings/internal/cord_rep_crc.h"
 
@@ -29,7 +32,7 @@ using ::absl::cordrep_testing::MakeFlat;
 using ::testing::Eq;
 using ::testing::Ne;
 
-#if !defined(NDEBUG) && GTEST_HAS_DEATH_TEST
+#if !defined(NDEBUG) && defined(GTEST_HAS_DEATH_TEST)
 
 TEST(CordRepCrc, NewWithNullPtr) {
   EXPECT_DEATH(CordRepCrc::New(nullptr, 0), "");
