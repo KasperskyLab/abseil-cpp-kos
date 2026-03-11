@@ -1,5 +1,13 @@
 # Changelog
 
+## Release for KasperskyOS Community Edition SDK 1.4 - 2026-03
+
+### Changes
+
+* Switched to a patch file scenario to demonstrate the KasperskyOS adaptation
+* Updated upstream version
+* Added Embedded time-zone info for absl::time
+
 ## Release for KasperskyOS Community Edition SDK 1.3 - 2025-07
 
 ### Changes
@@ -15,7 +23,7 @@
 * Updated documentation for KasperskyOS
 * Added usage example for KasperskyOS
 * Added scripts and cmake modules to run unit tests on KasperskyOS
-* Disable death tests and skipped tests that are not supported by KasperskyOS
+* Disabled death tests and skipped tests that are not supported by KasperskyOS
 * Added build and install script for KasperskyOS
 
 ## Initial adaptation for KasperskyOS - 2023-01-11

@@ -1,0 +1,391 @@
+© 2026 AO Kaspersky Lab
+This script is licensed under the MIT License
+
+---
+ CMakeLists.txt                                | 40 ++++++++-
+ absl/base/config.h                            |  5 +-
+ absl/base/internal/sysinfo.cc                 | 21 ++++-
+ absl/base/internal/unscaledcycleclock.h       |  7 ++
+ absl/debugging/CMakeLists.txt                 |  2 +-
+ absl/debugging/failure_signal_handler.cc      |  2 +-
+ absl/debugging/internal/elf_mem_image.cc      |  2 +-
+ absl/debugging/internal/stack_consumption.h   |  2 +-
+ absl/debugging/internal/vdso_support.cc       |  4 +-
+ absl/time/CMakeLists.txt                      | 11 +++
+ .../cctz/src/time_zone_info_embedded.cc       | 81 +++++++++++++++++++
+ .../internal/cctz/testdata/gen_embedded_tz.sh | 33 ++++++++
+ 12 files changed, 199 insertions(+), 11 deletions(-)
+ create mode 100644 absl/time/internal/cctz/src/time_zone_info_embedded.cc
+ create mode 100755 absl/time/internal/cctz/testdata/gen_embedded_tz.sh
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8d3059d5..e27d30b7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -23,10 +23,35 @@ if (POLICY CMP0141)
+   cmake_policy(SET CMP0141 NEW)
+ endif (POLICY CMP0141)
+ 
+-project(absl LANGUAGES CXX VERSION 20250512)
++# if command can use IN_LIST
++if (POLICY CMP0057)
++  cmake_policy(SET CMP0057 NEW)
++endif (POLICY CMP0057)
++
++# Project version variables are the empty string if version is unspecified
++if (POLICY CMP0048)
++  cmake_policy(SET CMP0048 NEW)
++endif (POLICY CMP0048)
++
++# option() honor variables
++if (POLICY CMP0077)
++  cmake_policy(SET CMP0077 NEW)
++endif (POLICY CMP0077)
++
++# Allow the user to specify the MSVC runtime
++if (POLICY CMP0091)
++  cmake_policy(SET CMP0091 NEW)
++endif (POLICY CMP0091)
++
++project(absl LANGUAGES C CXX VERSION 20250512)
+ set(ABSL_SOVERSION "2505.0.0")
++
+ include(CTest)
+ 
++if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
++  add_compile_options(-Wno-deprecated-builtins)
++endif()
++
+ # Output directory is correct by default for most build setups. However, when
+ # building Abseil as a DLL, it is important to have the DLL in the same
+ # directory as the executable using it. Thus, we put all executables in a single
+@@ -170,8 +195,17 @@ endif()
+ add_subdirectory(absl)
+ 
+ if(ABSL_ENABLE_INSTALL)
+-  
+-
++  # absl:lts-remove-begin(system installation is supported for LTS releases)
++  # We don't support system-wide installation
++  list(APPEND SYSTEM_INSTALL_DIRS "/usr/local" "/usr" "/opt/" "/opt/local" "c:/Program Files/${PROJECT_NAME}")
++  if(NOT DEFINED CMAKE_INSTALL_PREFIX OR CMAKE_INSTALL_PREFIX IN_LIST SYSTEM_INSTALL_DIRS)
++    message(WARNING "\
++  The default and system-level install directories are unsupported except in LTS \
++  releases of Abseil.  Please set CMAKE_INSTALL_PREFIX to install Abseil in your \
++  source or build tree directly.\
++    ")
++  endif()
++  # absl:lts-remove-end
+   # install as a subdirectory only
+   install(EXPORT ${PROJECT_NAME}Targets
+     NAMESPACE absl::
+diff --git a/absl/base/config.h b/absl/base/config.h
+index 9170a6f6..70180e98 100644
+--- a/absl/base/config.h
++++ b/absl/base/config.h
+@@ -372,12 +372,15 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
+ // POSIX.1-2001.
+ #ifdef ABSL_HAVE_MMAP
+ #error ABSL_HAVE_MMAP cannot be directly set
++
+ #elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) ||    \
+     defined(_AIX) || defined(__ros__) || defined(__native_client__) ||       \
+     defined(__asmjs__) || defined(__EMSCRIPTEN__) || defined(__Fuchsia__) || \
+     defined(__sun) || defined(__myriad2__) || defined(__HAIKU__) ||          \
+     defined(__OpenBSD__) || defined(__NetBSD__) || defined(__QNX__) ||       \
+-    defined(__VXWORKS__) || defined(__hexagon__) || defined(__XTENSA__)
++    defined(__VXWORKS__) || defined(__hexagon__) || defined(__XTENSA__) ||   \
++    defined (__KOS__)
++
+ #define ABSL_HAVE_MMAP 1
+ #endif
+ 
+diff --git a/absl/base/internal/sysinfo.cc b/absl/base/internal/sysinfo.cc
+index 1937db30..e30f83b6 100644
+--- a/absl/base/internal/sysinfo.cc
++++ b/absl/base/internal/sysinfo.cc
+@@ -50,6 +50,12 @@
+ #include <zircon/process.h>
+ #endif
+ 
++#if defined(__KOS__)
++extern "C" {
++#include <coresrv/thread/thread_api.h>
++}
++#endif
++
+ #include <string.h>
+ 
+ #include <cassert>
+@@ -481,9 +487,22 @@ pid_t GetTID() {
+ pid_t GetTID() {
+   // `pthread_t` need not be arithmetic per POSIX; platforms where it isn't
+   // should be handled above.
++#ifdef __KOS__
++  klc_thread_handle handle;
++  KnThreadInfo ti;
++  if (KnThreadOpenCurrent(&handle) != rcOk)
++  {
++    return static_cast<pid_t>(INVALID_TID);
++  }
++  if (KnThreadGetInfoByHandle(handle, &ti) != rcOk)
++  {
++    return static_cast<pid_t>(INVALID_TID);
++  }
++  return static_cast<pid_t>(ti.tid);
++#else
+   return static_cast<pid_t>(pthread_self());
++#endif
+ }
+-
+ #endif
+ 
+ // GetCachedTID() caches the thread ID in thread-local storage (which is a
+diff --git a/absl/base/internal/unscaledcycleclock.h b/absl/base/internal/unscaledcycleclock.h
+index bfd98873..dffe4780 100644
+--- a/absl/base/internal/unscaledcycleclock.h
++++ b/absl/base/internal/unscaledcycleclock.h
+@@ -98,7 +98,14 @@ inline int64_t UnscaledCycleClock::Now() {
+ // virtual timer properly.
+ inline int64_t UnscaledCycleClock::Now() {
+   int64_t virtual_timer_value;
++
++  #ifdef __KOS__
++  // In KasperskyOS, only the Counter-timer Physical Count register (CNTPCT_EL0) is readable from EL0.
++  asm volatile("isb");
++  asm volatile("mrs %0, cntpct_el0" : "=r"(virtual_timer_value));
++  #else
+   asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
++  #endif
+   return virtual_timer_value;
+ }
+ 
+diff --git a/absl/debugging/CMakeLists.txt b/absl/debugging/CMakeLists.txt
+index 60b138a5..47ce1c74 100644
+--- a/absl/debugging/CMakeLists.txt
++++ b/absl/debugging/CMakeLists.txt
+@@ -369,7 +369,7 @@ absl_cc_test(
+     GTest::gmock_main
+ )
+ 
+-# Internal-only target, do not depend on directly.
++# POSIX sigaltstack is not implemented in KasperskyOS, so the stack_consumption library can't be compiled.
+ absl_cc_library(
+   NAME
+     stack_consumption
+diff --git a/absl/debugging/failure_signal_handler.cc b/absl/debugging/failure_signal_handler.cc
+index d31f5a1f..67b88bc5 100644
+--- a/absl/debugging/failure_signal_handler.cc
++++ b/absl/debugging/failure_signal_handler.cc
+@@ -55,7 +55,7 @@
+ #include "absl/debugging/internal/examine_stack.h"
+ #include "absl/debugging/stacktrace.h"
+ 
+-#if !defined(_WIN32) && !defined(__wasi__)
++#if !defined(_WIN32) && !defined(__KOS__)
+ #define ABSL_HAVE_SIGACTION
+ // Apple WatchOS and TVOS don't allow sigaltstack
+ // Apple macOS has sigaltstack, but using it makes backtrace() unusable.
+diff --git a/absl/debugging/internal/elf_mem_image.cc b/absl/debugging/internal/elf_mem_image.cc
+index 2c168309..95c4292c 100644
+--- a/absl/debugging/internal/elf_mem_image.cc
++++ b/absl/debugging/internal/elf_mem_image.cc
+@@ -377,7 +377,7 @@ void ElfMemImage::SymbolIterator::Update(uint32_t increment) {
+   const ElfW(Versym) *version_symbol = image->GetVersym(index_);
+   ABSL_RAW_CHECK(symbol && version_symbol, "");
+   const char *const symbol_name = image->GetDynstr(symbol->st_name);
+-#if defined(__NetBSD__)
++#if defined(__NetBSD__) || defined(__KOS__)
+   const int version_index = version_symbol->vs_vers & VERSYM_VERSION;
+ #else
+   const ElfW(Versym) version_index = version_symbol[0] & VERSYM_VERSION;
+diff --git a/absl/debugging/internal/stack_consumption.h b/absl/debugging/internal/stack_consumption.h
+index f5ba5575..6b73a15c 100644
+--- a/absl/debugging/internal/stack_consumption.h
++++ b/absl/debugging/internal/stack_consumption.h
+@@ -24,7 +24,7 @@
+ // Use this feature test macro to detect its availability.
+ #ifdef ABSL_INTERNAL_HAVE_DEBUGGING_STACK_CONSUMPTION
+ #error ABSL_INTERNAL_HAVE_DEBUGGING_STACK_CONSUMPTION cannot be set directly
+-#elif !defined(__APPLE__) && !defined(_WIN32) && !defined(__Fuchsia__) && \
++#elif !defined(__KOS__) && !defined(__APPLE__) && !defined(_WIN32) && !defined(__Fuchsia__) && \
+     (defined(__i386__) || defined(__x86_64__) || defined(__ppc__) || \
+      defined(__aarch64__) || defined(__riscv))
+ #define ABSL_INTERNAL_HAVE_DEBUGGING_STACK_CONSUMPTION 1
+diff --git a/absl/debugging/internal/vdso_support.cc b/absl/debugging/internal/vdso_support.cc
+index 8a588eaf..cc0895e5 100644
+--- a/absl/debugging/internal/vdso_support.cc
++++ b/absl/debugging/internal/vdso_support.cc
+@@ -50,7 +50,7 @@
+ #define AT_SYSINFO_EHDR 33  // for crosstoolv10
+ #endif
+ 
+-#if defined(__NetBSD__)
++#if defined(__NetBSD__) || defined(__KOS__)
+ using Elf32_auxv_t = Aux32Info;
+ using Elf64_auxv_t = Aux64Info;
+ #endif
+@@ -112,7 +112,7 @@ const void *VDSOSupport::Init() {
+     ElfW(auxv_t) aux;
+     while (read(fd, &aux, sizeof(aux)) == sizeof(aux)) {
+       if (aux.a_type == AT_SYSINFO_EHDR) {
+-#if defined(__NetBSD__)
++#if defined(__NetBSD__) || defined(__KOS__)
+         vdso_base_.store(reinterpret_cast<void *>(aux.a_v),
+                          std::memory_order_relaxed);
+ #else
+diff --git a/absl/time/CMakeLists.txt b/absl/time/CMakeLists.txt
+index ea91ba3c..0b484fab 100644
+--- a/absl/time/CMakeLists.txt
++++ b/absl/time/CMakeLists.txt
+@@ -68,6 +68,7 @@ absl_cc_library(
+     "internal/cctz/src/time_zone_if.h"
+     "internal/cctz/src/time_zone_impl.cc"
+     "internal/cctz/src/time_zone_impl.h"
++    "internal/cctz/src/time_zone_info_embedded.cc"
+     "internal/cctz/src/time_zone_info.cc"
+     "internal/cctz/src/time_zone_info.h"
+     "internal/cctz/src/time_zone_libc.cc"
+@@ -86,6 +87,16 @@ absl_cc_library(
+     $<$<PLATFORM_ID:Darwin,iOS,tvOS,visionOS,watchOS>:-Wl,-framework,CoreFoundation>
+ )
+ 
++# Generate initializers for embedded time zone info.
++add_custom_target(
++  generate_embedded_tz_info
++  COMMAND bash -c "${CMAKE_CURRENT_LIST_DIR}/internal/cctz/testdata/gen_embedded_tz.sh > ${CMAKE_CURRENT_LIST_DIR}/internal/cctz/src/time_zone_info_data.inc"
++  VERBATIM
++)
++get_target_property(time_zone_lib_target absl::time_zone ALIASED_TARGET)
++add_dependencies(${time_zone_lib_target} generate_embedded_tz_info)
++
++
+ # Internal-only target, do not depend on directly.
+ absl_cc_library(
+   NAME
+diff --git a/absl/time/internal/cctz/src/time_zone_info_embedded.cc b/absl/time/internal/cctz/src/time_zone_info_embedded.cc
+new file mode 100644
+index 00000000..48a090b8
+--- /dev/null
++++ b/absl/time/internal/cctz/src/time_zone_info_embedded.cc
+@@ -0,0 +1,81 @@
++#ifdef __KOS__
++// Embedding Time Zones for KasperskyOS only.
++
++#include "absl/base/config.h"
++#include "absl/time/internal/cctz/include/cctz/zone_info_source.h"
++
++namespace cctz = absl::time_internal::cctz;
++
++namespace absl {
++ABSL_NAMESPACE_BEGIN
++namespace time_internal {
++namespace cctz_extension {
++namespace {
++
++const struct ZoneInfo {
++  const std::string name;
++  const std::vector<char> data;
++} kZoneInfo[] = {
++
++// The data was generated using command `od -v -An -tx1 zoneinfo-file`.
++// See "absl/time/internal/cctz/testdata/README.zoneinfo" to update the data
++// and "absl/time/internal/cctz/testdata/gen_embedded_tz.sh" to generate
++// initializers.
++#include "absl/time/internal/cctz/src/time_zone_info_data.inc"
++};
++
++class EmbeddedZoneInfoSource : public cctz::ZoneInfoSource {
++ public:
++  EmbeddedZoneInfoSource(const char* data, std::size_t size)
++      : data_(data), end_(data + size) {}
++
++  std::size_t Read(void* ptr, std::size_t size) override {
++    const std::size_t len =
++        std::min<std::size_t>(size, static_cast<size_t>(end_ - data_));
++    memcpy(ptr, data_, len);
++    data_ += len;
++    return len;
++  }
++
++  int Skip(std::size_t offset) override {
++    data_ += std::min<std::size_t>(offset, static_cast<size_t>(end_ - data_));
++    return 0;
++  }
++
++ private:
++  const char* data_;
++  const char* const end_;
++};
++
++std::unique_ptr<cctz::ZoneInfoSource> EmbeddedFactory(
++    const std::string& name,
++    const std::function<std::unique_ptr<cctz::ZoneInfoSource>(
++        const std::string& name)>& fallback_factory) {
++  // Search in embedded Time Zones.
++  for (const ZoneInfo& zoneinfo : kZoneInfo) {
++    if (name == zoneinfo.name) {
++      if (zoneinfo.data.size() == 0) {
++        // Invalid embedded TZ data for that name - fallback.
++        break;
++      }
++      return std::unique_ptr<cctz::ZoneInfoSource>(
++          new EmbeddedZoneInfoSource(zoneinfo.data.data(), zoneinfo.data.size()));
++    }
++  }
++
++  // Fallback to default.
++  if (auto zip = fallback_factory(name)) return zip;
++  return nullptr;
++}
++
++}  // namespace
++
++// Override the weak symbol.
++ZoneInfoSourceFactory zone_info_source_factory = EmbeddedFactory;
++
++}  // namespace cctz_extension
++}  // namespace time_internal
++ABSL_NAMESPACE_END
++}  // namespace absl
++
++#endif  // __KOS__
+diff --git a/absl/time/internal/cctz/testdata/gen_embedded_tz.sh b/absl/time/internal/cctz/testdata/gen_embedded_tz.sh
+new file mode 100755
+index 00000000..cae7b5b9
+--- /dev/null
++++ b/absl/time/internal/cctz/testdata/gen_embedded_tz.sh
+@@ -0,0 +1,33 @@
++#!/usr/bin/env bash
++#
++
++set -e
++
++#
++# zoneinfo conversion utility script to make time zone info initializer for
++# embedded Zone Info Source.
++#
++# Run
++# $ gen_embedded_tz.sh > time_zone_info_data.inc
++#
++
++shopt -s globstar nullglob dotglob extglob
++
++pushd $(dirname "$(realpath "${0}")")/zoneinfo > /dev/null
++
++for f in **/*([^.]); do
++    if [ -f "${f}" ]; then
++        echo "{"
++        echo "  .name = \"${f}\","
++        echo "  .data = {"
++        od -v -An -tx1 "${f}" | \
++        sed 's/\b\S\S\b/0x&,/g' | \
++        sed 's/^/   /g'
++        echo "  }"
++        echo "},"
++    fi
++done
++
++popd  > /dev/null
++
++shopt -u globstar nullglob dotglob extglob
