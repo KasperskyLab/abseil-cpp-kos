@@ -10,7 +10,7 @@ For more information about the original Abseil C++ library, see its
 [Abseil website](https://abseil.io/).
 
 For additional details on KasperskyOS, including its limitations and known issues, please refer to
-the [KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.4&customization=KCE&helpid=community_edition).
+the [KasperskyOS Community Edition Online Help](https://kas.pr/pi3i).
 
 ## Table of contents
 - [KasperskyOS adaptation patch for Abseil (C++ Common Libraries)](#kasperskyos-adaptation-patch-for-abseil-c-common-libraries)
@@ -28,11 +28,11 @@ the [KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=
 ### Prerequisites
 
 1. Confirm that your host system meets all the
-[System requirements](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.4&customization=KCE&helpid=system_requirements)
+[System requirements](https://kas.pr/s3gv)
 listed in the KasperskyOS Community Edition Developer's Guide.
-1. [Install](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.4&customization=KCE&helpid=sdk_install_and_remove)
+1. [Install](https://kas.pr/xt59)
 the KasperskyOS Community Edition SDK version 1.4. You can download it for free from
-[os.kaspersky.com](https://os.kaspersky.com/development/).
+[os.kaspersky.com](https://kas.pr/p35v).
 1. Copy the source files of this adaptation patch to your local project directory.
 1. Source the SDK setup script to configure the build environment. This exports the `KOSCEDIR`
   environment variable, which points to the SDK installation directory:
@@ -45,7 +45,7 @@ the KasperskyOS Community Edition SDK version 1.4. You can download it for free 
 The KasperskyOS-adapted version of the Abseil C++ library is built using the CMake build system,
 which is provided in the KasperskyOS Community Edition SDK. When you develop a KasperskyOS-based
 solution, use the
-[recommended structure of project directories](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.4&customization=KCE&helpid=cmake_using_sdk_cmake)
+[recommended structure of project directories](https://kas.pr/kkf6)
 to simplify the use of CMake scripts.
 
 Suppose to install the library into a user directory `~/.local/share/kos/`. This path is
@@ -101,7 +101,7 @@ After a successful build, the library is installed in the
 
 To integrate the KasperskyOS-adapted Abseil C++ library into your solution, first build and install
 it into the `~/.local/share/kos/` directory. For a practical implementation, refer to the
-[abseil example](https://github.com/KasperskyLab/kos-ce-extra/tree/master/examples/abseil) in the
+[abseil example](https://kas.pr/z6g2) in the
 `KasperskyLab/kos-ce-extra` repository, which demonstrates this exact workflow.
 
 ## Trademarks
